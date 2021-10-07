@@ -21,41 +21,57 @@ const getUser = (req, res) => {
       }
     })
     .catch((err) => {
-      console.log(`Error ${err}`);
-      res.status(500).send({ message: 'Error!' });
+      if (err.name == 'CastError') {
+        res.status(400).send({ message: `${err}` });
+      } else {
+        console.log(err);
+        res.status(500).send({ message: 'Error!' });
+      }
     });
 };
 
 const createUser = (req, res) => {
-  User.create({ ...req.body })
+  User.create({ ...req.body }, { runValidators: true })
     .then((user) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      console.log(`Error: ${err}`);
-      res.status(500).send({ message: 'Error' });
+      if (err.name == 'ValidationError') {
+        res.status(400).send({ message: `${err}` });
+      } else {
+        console.log(err);
+        res.status(500).send({ message: 'Error!' });
+      }
     });
 };
 
 const updateUser = (req, res) => {
-  User.findByIdAndUpdate(req.user._id,{ name: req.body.name, about: req.body.about })
+  User.findByIdAndUpdate(req.user._id,{ name: req.body.name, about: req.body.about }, { new: true }, { runValidators: true })
     .then((user) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      console.log(`Error: ${err}`);
-      res.status(500).send({ message: 'Error' });
+      if (err.name == 'ValidationError') {
+        res.status(400).send({ message: `${err}` });
+      } else {
+        console.log(err);
+        res.status(500).send({ message: 'Error!' });
+      }
     });
 };
 
 const updateAvatar = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, { avatar: req.body.link })
+  User.findByIdAndUpdate(req.user._id, { avatar: req.body.link }, { runValidators: true })
   .then((avatar) => {
     res.status(200).send(avatar);
   })
   .catch((err) => {
-    console.log(`Error: ${err}`);
-    res.status(500).send({ message: 'Error' });
+    if (err.name == 'ValidationError') {
+      res.status(400).send({ message: `${err}` });
+    } else {
+      console.log(err);
+      res.status(500).send({ message: 'Error!' });
+    }
   });
 }
 
