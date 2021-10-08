@@ -6,12 +6,8 @@ const getCards = (req, res) => {
       res.status(200).send(cards);
     })
     .catch((err) => {
-      if (err.name == 'CastError') {
-        res.status(400).send({ message: `${err}` });
-      } else {
-        console.log(err);
-        res.status(500).send({ message: 'Error!' });
-      }
+      console.log(err);
+      res.status(500).send({ message: 'Error!' });
     });
 };
 
@@ -66,8 +62,12 @@ const addLike = (req, res) => {
       }
     })
     .catch((err) => {
-      console.log(err);
-      res.status(500).send({ message: 'Error!' });
+      if (err.name == 'CastError') {
+        res.status(400).send({ message: `${err}` });
+      } else {
+        console.log(err);
+        res.status(500).send({ message: 'Error!' });
+      }
     });
 };
 
@@ -86,8 +86,12 @@ const removeLike = (req, res) => {
     }
   })
   .catch((err) => {
-    console.log(err);
-    res.status(500).send({ message: 'Error!' });
+    if (err.name == 'CastError') {
+      res.status(400).send({ message: `${err}` });
+    } else {
+      console.log(err);
+      res.status(500).send({ message: 'Error!' });
+    }
   });
 }
 
