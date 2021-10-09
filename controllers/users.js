@@ -46,7 +46,7 @@ const createUser = (req, res) => {
 };
 
 const updateUser = (req, res) => {
-  User.findByIdAndUpdate(req.user._id,{ name: req.body.name, about: req.body.about }, { new: true }, { runValidators: true })
+  User.findByIdAndUpdate(req.user._id, { name: req.body.name, about: req.body.about }, { new: true, runValidators: true })
     .then((user) => {
       res.status(200).send(user);
     })
@@ -61,7 +61,7 @@ const updateUser = (req, res) => {
 };
 
 const updateAvatar = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, { avatar: req.body.link }, { new: true }, { runValidators: true })
+  User.findByIdAndUpdate(req.user._id, { avatar: req.body.link }, { new: true, runValidators: true })
   .then((avatar) => {
     res.status(200).send(avatar);
   })
