@@ -1,17 +1,18 @@
 const Card = require('../models/card');
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => {
       res.status(200).send(cards);
     })
     .catch((err) => {
-      console.log(err);
-      res.status(500).send({ message: 'Error!' });
+      const e = new Error('Error!');
+      e.statusCode = 500;
+      next(e);
     });
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => {
@@ -19,35 +20,48 @@ const createCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name == 'ValidationError') {
-        res.status(400).send({ message: `${err}` });
+        const e = new Error('Проверьте введенные данные');
+        e.statusCode = 400;
+        next(e);
       } else {
-        console.log(err);
-        res.status(500).send({ message: 'Error!' });
+        const e = new Error('Error!');
+        next(e);
       }
     });
 };
 
-const deleteCard = (req, res) => {
+const deleteCard = (req, res, next) => {
   const { id } = req.params;
   Card.findByIdAndRemove(id)
     .then((card) => {
-      if (card) {
-        res.status(200).send(card);
-      } else {
-        res.status(404).send({ message: 'Not Found' });
+      if (req.user._id === card.owner) {
+        if (card) {
+          res.status(200).send(card);
+        } else {
+          const e = new Error('Not Found');
+          e.statusCode = 404;
+          next(e);
+        }
+      }
+      else {
+        const e = new Error('Вы не можете удалить картинку другого пользователя');
+        e.statusCode = 403;
+        next(e);
       }
     })
     .catch((err) => {
       if (err.name == 'CastError') {
-        res.status(400).send({ message: `${err}` });
+        const e = new Error(err);
+        e.statusCode = 400;
+        next(e);
       } else {
-        console.log(err);
-        res.status(500).send({ message: 'Error!' });
+        const e = new Error('Error!');
+        next(e);
       }
     });
 };
 
-const addLike = (req, res) => {
+const addLike = (req, res, next) => {
   const { id } = req.params;
   Card.findByIdAndUpdate(
     id,
@@ -58,20 +72,24 @@ const addLike = (req, res) => {
       if (like) {
         res.status(200).send(like);
       } else {
-        res.status(404).send({ message: 'Not Found' });
+        const e = new Error('Not Found');
+        e.statusCode = 404;
+        next(e);
       }
     })
     .catch((err) => {
       if (err.name == 'CastError') {
-        res.status(400).send({ message: `${err}` });
+        const e = new Error(err);
+        e.statusCode = 400;
+        next(e);
       } else {
-        console.log(err);
-        res.status(500).send({ message: 'Error!' });
+        const e = new Error('Error!');
+        next(e);
       }
     });
 };
 
-const removeLike = (req, res) => {
+const removeLike = (req, res, next) => {
   const { id } = req.params;
   Card.findByIdAndUpdate(
     id,
@@ -82,15 +100,19 @@ const removeLike = (req, res) => {
     if (like) {
       res.status(200).send(like);
     } else {
-      res.status(404).send({ message: 'Not Found' });
+      const e = new Error('Not Found');
+      e.statusCode = 404;
+      next(e);
     }
   })
   .catch((err) => {
     if (err.name == 'CastError') {
-      res.status(400).send({ message: `${err}` });
+      const e = new Error(err);
+      e.statusCode = 400;
+      next(e);
     } else {
-      console.log(err);
-      res.status(500).send({ message: 'Error!' });
+      const e = new Error('Error!');
+      next(e);
     }
   });
 }
