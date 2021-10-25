@@ -13,7 +13,6 @@
         "error",
         { "allow": ["_id"] }
       ],
-      "no-console": "off",
-      "multiline": "never"
+      "no-console": "off"
     }
 }
