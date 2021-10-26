@@ -1,5 +1,14 @@
 const router = require('express').Router();
 const { Joi, celebrate } = require('celebrate');
+const validator = require('validator');
+
+const checkLink = (value) => {
+  const result = validator.isURL(value);
+  if (result) {
+    return value;
+  }
+  throw new Error('URL validation err');
+};
 
 const {
   getUser,
@@ -24,7 +33,7 @@ router.patch('/me', celebrate({
 }), updateUser);
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().min(2),
+    avatar: Joi.string().required().min(2).custom(checkLink),
   }),
 }), updateAvatar);
 

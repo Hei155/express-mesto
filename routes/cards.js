@@ -10,7 +10,7 @@ const {
   removeLike,
 } = require('../controllers/cards');
 
-const method = (value) => {
+const checkLink = (value) => {
   const result = validator.isURL(value);
   if (result) {
     return value;
@@ -22,7 +22,7 @@ router.get('/', getCards);
 router.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().custom(method),
+    link: Joi.string().required().custom(checkLink),
   }),
 }), createCard);
 router.delete('/:id', celebrate({
