@@ -20,7 +20,7 @@ const createUser = (req, res, next) => {
           const e = new Error(err);
           e.statusCode = 400;
           next(e);
-        } else if (err.name === 'MongoError' && err.code === 11000) {
+        } else if (err.name === 'MongoServerError' && err.code === 11000) {
           const e = new Error('Данный email уже зарегистрирован');
           e.statusCode = 409;
           next(e);

@@ -32,19 +32,22 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   const { id } = req.params;
-  Card.findByIdAndRemove(id)
+  Card.findById(id)
     .then((card) => {
-      if (req.user._id === card.owner) {
-        if (card) {
-          res.status(200).send(card);
+      if (card) {
+        const userId = JSON.stringify(req.user._id);
+        const cardOwner = JSON.stringify(card.owner);
+        if (userId === cardOwner) {
+          Card.findByIdAndDelete(id)
+            .then(() => res.status(200).send(card));
         } else {
-          const e = new Error('Not Found');
-          e.statusCode = 404;
+          const e = new Error('Вы не можете удалить картинку другого пользователя');
+          e.statusCode = 403;
           next(e);
         }
       } else {
-        const e = new Error('Вы не можете удалить картинку другого пользователя');
-        e.statusCode = 403;
+        const e = new Error('Такой карточки нет');
+        e.statusCode = 404;
         next(e);
       }
     })

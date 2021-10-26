@@ -12,16 +12,14 @@ const getUsers = (req, res, next) => {
 };
 
 const getUser = (req, res, next) => {
-  const { id } = req.params;
-  User.findById(id)
+  User.findById({ _id: req.params.id })
     .then((user) => {
-      if (user) {
-        res.status(200).send(user);
-      } else {
-        const e = new Error('Not Found');
+      if (!user) {
+        const e = new Error('Такого пользователя нет');
         e.statusCode = 404;
-        next(e);
+        return next(e);
       }
+      return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
